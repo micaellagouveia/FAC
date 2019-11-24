@@ -1,0 +1,81 @@
+.text
+main:
+# $v0 = n
+
+li $v0, 5
+syscall
+move $s0, $v0 # n
+
+add $t2, $zero, $zero  # i=0
+add $t5, $zero, $zero  # soma=0
+
+addi $s1, $s0, 1  # $s1 = tamanho para alocar memória no vetor
+
+addi $s2, $s1, 1  #valor para passar no parâmetro da função de leitura da string
+
+li $v0, 9  # alocando a memória
+move $a0, $s1 #alocando o tamanho para $a0
+syscall
+
+move $t0, $v0  # $t0 -> espaço da primeira string (começa em $t0) Endereço base do vetor1
+
+
+li $v0, 9  # alocando a memória
+move $a0, $s1 #alocando o tamanho para $a0
+syscall
+
+move $t1, $v0  # $t0 -> espaço da segunda string (começa em $t1) Endereço base do vetor2
+
+# Função para guardar chars no espaço alocado
+li $v0, 8
+move $a0, $t0
+move $a1, $s2
+syscall
+
+li $v0, 8
+move $a0, $t1
+move $a1, $s2
+syscall
+# -----------------------
+
+# Variáveis temporárias para o end base dos vetores
+move $t6, $t0
+move $t7, $t1
+
+verificar:
+
+bge $t2, $s0, exit
+
+# if(a[i] == b[i]) soma+=1
+
+lb $t3, 0($t6)
+lb $t4, 0($t7)
+
+beq $t3, $t4, soma
+j iterador
+
+soma:
+
+addi $t5, $t5, 1  # soma+=1
+j iterador
+
+iterador:
+
+addi $t6, $t6, 1 # vetor1++
+addi $t7, $t7, 1 # vetor2++
+addi $t2, $t2, 1 # i++
+
+j verificar
+
+
+exit:
+
+li $v0, 1
+move $a0, $t5
+syscall
+
+# New Line
+li $v0, 11
+li $a0, 10
+syscall
+
